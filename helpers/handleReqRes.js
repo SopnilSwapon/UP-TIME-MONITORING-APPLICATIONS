@@ -3,6 +3,10 @@
 const url = require('url');
 const {StringDecoder} = require('string_decoder');
 
+// const routes = require('/handlers/sampleHandler.js');
+const {sampleHandler} = require('../handlers/sampleHandler');
+const {notFoundHandlers} = require("../handlers/notFoundHandlers")
+
 // scaffolding
 const handler = {}
 
@@ -15,9 +19,15 @@ handler.handleReqRes = (req, res) => {
     const method = req.method.toUpperCase();
     const queryStringObj = parsedUrl.query;
     const headersObject = req.headers;
-
+    
+    const requestProperties = {
+        parsedUrl, path, trimPath, method, queryStringObj, headersObject
+    }
     const decoder = new StringDecoder("utf-8");
     let realData = "";
+    console.log(sampleHandler[trimPath], 'check the trim')
+    const chosenHandler = sampleHandler[trimPath] ? sampleHandler[trimPath] : notFoundHandlers;
+   
 
     req.on("data", (buffer) => {
         realData += decoder.write(buffer);
@@ -25,8 +35,16 @@ handler.handleReqRes = (req, res) => {
     });
     req.on("end", () => {
         realData += decoder.end();
-
-        console.log(realData, 'check out real data');
+        chosenHandler(requestProperties, (statusCode, payload) => {
+            statusCode = typeof(statusCode) === "number" ? statusCode : 500;
+            payload = typeof(payload) === "object" ? payload : {};
+    
+            const payloadString = JSON.stringify(payload);
+            // return the final response;
+    
+            res.writeHead(statusCode);
+            res.end(payloadString)
+        })
         res.end("hello backend developers I'm coming withing 2 months or 3 months or max 6 months");
 
     })

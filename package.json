@@ -3,7 +3,10 @@
     "nodemon": "^3.1.10"
   },
   "scripts": {
- "start": "nodemon index"
+    "start": "cross-env NODE_ENV=staging nodemon index",
+    "production": "cross-env NODE_ENV=production nodemon index"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
-
