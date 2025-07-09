@@ -1,9 +1,16 @@
-const handler = {};
+const handle = {};
 
-handler.sampleHandler = (requestProperties, callback) => {
-    console.log(requestProperties, 'check requesproperties')
-    callback(200, {message: "This is a sample url"})
+handle.sampleHandler = (requestProperties, callback) => {
+  console.log(requestProperties, 'check requesproperties');
+  callback(200, { message: 'This is a sample url' });
+};
 
-}
+module.exports = handle;
+// const sampleHandler = {};
 
-module.exports = handler;
+// sampleHandler.sample = (requestProperties, callback) => {
+//   console.log(requestProperties, 'check requestProperties');
+//   callback(200, { message: 'This is a sample url' });
+// };
+
+// module.exports = { sampleHandler };
