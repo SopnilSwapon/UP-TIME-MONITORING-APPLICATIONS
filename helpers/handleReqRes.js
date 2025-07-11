@@ -7,6 +7,7 @@ const { StringDecoder } = require('string_decoder');
 const { sampleHandler } = require('../handlers/sampleHandler');
 const { notFoundHandlers } = require('../handlers/notFoundHandlers');
 const routes = require('../routes');
+const { paseJSON } = require('../helpers/utilities');
 
 // scaffolding
 const handler = {};
@@ -38,6 +39,7 @@ handler.handleReqRes = (req, res) => {
   });
   req.on('end', () => {
     realData += decoder.end();
+    requestProperties.body = paseJSON(realData);
     chosenHandler(requestProperties, (statusCode, payload) => {
       statusCode = typeof statusCode === 'number' ? statusCode : 500;
       payload = typeof payload === 'object' ? payload : {};
