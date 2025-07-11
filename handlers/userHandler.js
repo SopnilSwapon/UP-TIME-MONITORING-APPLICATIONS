@@ -73,6 +73,9 @@ handler._user.post = (requestProperties, callback) => {
     });
   }
 };
+
+// TODO: Authentications
+
 handler._user.get = (requestProperties, callback) => {
   // check validity of mobile
   const mobile =
@@ -96,6 +99,9 @@ handler._user.get = (requestProperties, callback) => {
     callback(404, { error: 'Requested user not foundsssssssss' });
   }
 };
+
+// TODO: Authentications
+
 handler._user.put = (requestProperties, callback) => {
   // check validity of mobile number;
   const mobile =
@@ -152,19 +158,35 @@ handler._user.put = (requestProperties, callback) => {
     callback(400, { error: 'Invalid mobile number, please try again!' });
   }
 };
+
+// TODO: Authentications
+
 handler._user.delete = (requestProperties, callback) => {
   // check validity of phone number
-  const phone =
+  const mobile =
     typeof requestProperties.body.mobile === 'string' &&
-    requestProperties.body.mobile.trim().length === '11'
+    requestProperties.body.mobile.trim().length === 11
       ? requestProperties.body.mobile
       : false;
-  if (phone) {
+  console.log('mobile', mobile);
+  if (mobile) {
     // looked up the user
-    data.read('users', mobile);
+    data.read('users', mobile, (err, userData) => {
+      if (!err && userData) {
+        data.delete('users', mobile, (error) => {
+          if (!error) {
+            callback(200, { message: 'The user deleted successfully' });
+          } else {
+            callback(500, { error: 'There was a problem in server side' });
+          }
+        });
+      } else {
+        500, { message: 'There was a problem in server side' };
+      }
+    });
   } else {
     callback(400, {
-      error: 'You have a problem in your request, please try again!',
+      error: 'You have a problem in your request, please try again!!!',
     });
   }
 };
