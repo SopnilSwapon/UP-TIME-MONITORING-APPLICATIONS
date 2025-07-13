@@ -82,14 +82,58 @@ handler._token.put = (requestProperties, callback) => {
       ? requestProperties.body.id
       : false;
   const extend =
-    (typeof requestProperties.body.extend === 'boolean') &
-    (requestProperties.body.extend === true)
+    typeof requestProperties.body.extend === 'boolean' &&
+    requestProperties.body.extend === true
       ? requestProperties.body.extend
       : false;
 
   if (id && extend) {
+    data.read('tokens', id, (err, tokenData) => {
+      let tokenObject = paseJSON(tokenData);
+      if (tokenObject.expires > Date.now()) {
+        tokenObject.expires = Date.now() * 60 * 60 * 1000;
+        // store the updated token
+        data.update('tokens', id, tokenObject, (err2) => {
+          if (!err2) {
+            callback(200);
+          } else {
+            callback(500, { error: 'There was a server error' });
+          }
+        });
+      } else {
+        callback(400, { error: 'Token already expired' });
+      }
+    });
+  } else {
+    callback(400, { error: 'There was a problem in your request' });
   }
 };
-handler._token.delete = (requestProperties, callback) => {};
+handler._token.delete = (requestProperties, callback) => {
+  // check validity of id
+  const id =
+    typeof requestProperties.queryStringObj.id === 'string' &&
+    requestProperties.queryStringObj.id.trim().length === 19
+      ? requestProperties.queryStringObj.id
+      : false;
+  if (id) {
+    data.read('tokens', id, (err, tokenData) => {
+      if (!err && tokenData) {
+        data.delete('tokens', id, (err2) => {
+          if (!err2) {
+            callback(200, { message: 'The token deleted successfully' });
+          } else {
+            500, { error: 'There was a server side error' };
+          }
+        });
+      } else {
+        callback(500, { error: 'There was a server side error' });
+      }
+    });
+  } else {
+    callback(400, {
+      error: 'You have a problem in your request, please try again!!!',
+    });
+  }
+};
 
 module.exports = handler;

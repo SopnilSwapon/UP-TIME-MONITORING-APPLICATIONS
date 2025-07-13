@@ -168,7 +168,6 @@ handler._user.delete = (requestProperties, callback) => {
     requestProperties.body.mobile.trim().length === 11
       ? requestProperties.body.mobile
       : false;
-  console.log('mobile', mobile);
   if (mobile) {
     // looked up the user
     data.read('users', mobile, (err, userData) => {
