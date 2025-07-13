@@ -54,9 +54,42 @@ handler._token.post = (requestProperties, callback) => {
   }
 };
 
-handler._token.get = (requestProperties, callback) => {};
+handler._token.get = (requestProperties, callback) => {
+  // check the id if valid
+  const id =
+    typeof requestProperties.queryStringObj.id === 'string' &&
+    requestProperties.queryStringObj.id.length === 19
+      ? requestProperties.queryStringObj.id
+      : false;
+  if (id) {
+    data.read('tokens', id, (err, tokenData) => {
+      const token = { ...paseJSON(tokenData) };
+      if (!err && token) {
+        callback(200, token);
+      } else {
+        callback(404, { error: 'Token was not found' });
+      }
+    });
+  } else {
+    callback(404, { error: 'Requested token was not found' });
+  }
+};
 
-handler._token.put = (requestProperties, callback) => {};
+handler._token.put = (requestProperties, callback) => {
+  const id =
+    typeof requestProperties.body.id === 'string' &&
+    requestProperties.body.id.trim().length === 19
+      ? requestProperties.body.id
+      : false;
+  const extend =
+    (typeof requestProperties.body.extend === 'boolean') &
+    (requestProperties.body.extend === true)
+      ? requestProperties.body.extend
+      : false;
+
+  if (id && extend) {
+  }
+};
 handler._token.delete = (requestProperties, callback) => {};
 
 module.exports = handler;
