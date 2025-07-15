@@ -5,7 +5,6 @@ const { paseJSON } = require('../helpers/utilities');
 const { _token } = require('../handlers/tokenHandler');
 
 const handler = {};
-handler._user = {};
 
 handler.userHandler = (requestProperties, callback) => {
   const acceptedMethods = ['get', 'post', 'put', 'delete'];
@@ -15,6 +14,8 @@ handler.userHandler = (requestProperties, callback) => {
     callback(405);
   }
 };
+
+handler._user = {};
 
 handler._user.post = (requestProperties, callback) => {
   const firstName =
